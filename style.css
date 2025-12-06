@@ -103,3 +103,7 @@ main{
     grid-template-rows: repeat(auto-fill, minmax(var(--game-box-width), 1fr));
 }
 
+.foodBox{
+    background-color: lightpink;
+    border: none;
+}
