@@ -59,6 +59,10 @@ const makeBox = () => {
     spawnFood();
 }
 
+window.addEventListener('resize', () => {
+    makeBox();
+})
+
 makeBox();
 
 function increaseScore(){
