@@ -51,7 +51,7 @@ const makeBox = () => {
             box.classList.add("boxes");
             DOM.gameBoard.appendChild(box);
             gameBoxCordiantesArray[`${i}, ${j}`] = box;
-            box.textContent = `${i}, ${j}`;
+            // box.textContent = `${i}, ${j}`;
         }
     }
 
