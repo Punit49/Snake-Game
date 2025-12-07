@@ -20,6 +20,7 @@ html, body{
 
     /* Background */
     --bg-primary-color: rgb(8, 8, 8);
+    --bg-snake: rgb(90, 189, 15);
 
     /* Colors */
     --text-primary-color: #e6e6e6;
@@ -45,9 +46,8 @@ html, body{
     --space-3xl: 48px;
 
     /* Game Box */
-    --game-box-height: 30px;
-    --game-box-width: 30px;
-
+    --game-box-height: 40px;
+    --game-box-width: 40px;
 }
 
 html{
@@ -93,17 +93,52 @@ main{
 .boxes{
     height: var(--game-box-height);
     border: 1px solid var(--border-secondary-color);
+    font-size: .8rem;
 }
 
 .gameBoard{
     border: 1px solid;
     display: grid;
     flex-grow: 1;
-    grid-template-columns: repeat(auto-fill, minmax(var(--game-box-width), 2fr));
+    grid-template-columns: repeat(auto-fill, minmax(var(--game-box-width), 1fr));
     grid-template-rows: repeat(auto-fill, minmax(var(--game-box-width), 1fr));
 }
 
+/* Js Clases */
 .foodBox{
     background-color: lightpink;
     border: none;
+}
+
+.snakeClass{
+    background-color: var(--bg-snake);
+}
+
+.snake-head {
+    width: 30px;
+    height: 30px;
+    background: #4caf50;
+    position: relative;
+    border-radius: 8px;
+}
+
+.snake-head::before,
+.snake-head::after {
+    content: "";
+    position: absolute;
+    background: black;
+    width: 6px;
+    height: 6px;
+    border-radius: 55%;
+    border: 1px solid white;
+}
+
+.snake-head::before {
+    left: 5px;
+    top: 4px;
+}
+
+.snake-head::after {
+    right: 5px;
+    top: 4px;
 }

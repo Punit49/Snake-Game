@@ -1,36 +1,136 @@
 const DOM = {
     main: document.querySelector("main"),
     gameBoard: document.querySelector(".gameBoard"),
-    boxSize: 30,
+    boxSize: 40,
+    scoreBox: document.querySelector("#scoreDiv"),
+    highScoreBox: document.querySelector("#highScore"),
 }
 
 let boxes;
+let gameBoxCordiantesArray = [];
+let rows = Math.floor((DOM.gameBoard.getBoundingClientRect().height) / DOM.boxSize);
+let cols = Math.floor((DOM.gameBoard.getBoundingClientRect().width) / DOM.boxSize);
+let highScore = JSON.parse(localStorage.getItem("highestScore")) || 0;
+DOM.highScoreBox.textContent = highScore;
 
-const generateRandomBox = (boxCount) => {
-    return Math.floor(Math.random() * boxCount) + 1;
+let snake = [{
+        x: rows/2, 
+        y: cols/2
+    }, {
+        x: 4, 
+        y: 7
+    }, {
+        x: 4, 
+        y: 8
+    }
+];
+
+let direction = "left";
+let previousDirection = "left";
+let food;
+let score = 0;
+
+const generateRandomBox = () => { 
+    return {x: Math.floor(Math.random() * rows), y: Math.floor(Math.random() * cols) };
 }
 
-const spawnFood = (randomBox) => {
+const spawnFood = () => {
     let previousFood = DOM.gameBoard.querySelector(".foodBox");
     if(previousFood) DOM.gameBoard.querySelector(".foodBox").classList.remove("foodBox");
-    randomBox.classList.add("foodBox");
+    food = generateRandomBox();
+    let foodBox = gameBoxCordiantesArray[`${food.x}, ${food.y}`]
+    foodBox.classList.add("foodBox");
 }
 
 const makeBox = () => {
     DOM.gameBoard.innerHTML = "";
-    let gameBoardHeight = Math.floor((DOM.gameBoard.getBoundingClientRect().height) / DOM.boxSize);
-    let gameBoardWidth = Math.floor((DOM.gameBoard.getBoundingClientRect().width) / DOM.boxSize);
 
-    for(let i = 1; i <= gameBoardHeight * gameBoardWidth; i++){
-        let box = document.createElement("div");
-        box.classList.add("boxes");
-        DOM.gameBoard.appendChild(box);
+    for(let i = 0; i < rows; i++){
+        for(let j = 0; j < cols; j++){
+            let box = document.createElement("div");
+            box.classList.add("boxes");
+            DOM.gameBoard.appendChild(box);
+            gameBoxCordiantesArray[`${i}, ${j}`] = box;
+            box.textContent = `${i}, ${j}`;
+        }
     }
 
     boxes = document.querySelectorAll('.boxes');
-    let randomBox = generateRandomBox(boxes.length);
-    spawnFood(boxes[randomBox]);
+    spawnFood();
 }
 
 makeBox();
 
+function increaseScore(){
+    score += 10;
+    DOM.scoreBox.textContent = score;
+}
+
+function gameOver(){
+    clearInterval(snakeInterval);
+    console.log("Game Over");
+    if(score > highScore) {
+        DOM.highScoreBox.textContent = score;
+        localStorage.setItem("highestScore", JSON.stringify(score));
+    }
+}
+// localStorage.clear();
+
+function spawnSnake(){
+    let snakeHead = {...snake[0]};
+
+    // Game Over 
+    if(snakeHead.x >= rows || snakeHead.y < 0 || snakeHead.y >= cols || snakeHead.x < 0){
+        gameOver();
+    } 
+
+    // Eat Food
+    if(snakeHead.x == food.x && snakeHead.y == food.y){
+        snake.push({x: food.x, y: food.y});
+        spawnFood();
+        increaseScore();
+    }
+
+    if(direction == "left") snakeHead.y = snakeHead.y - 1;
+    if(direction == "up") snakeHead.x = snakeHead.x - 1;
+    if(direction == "down") snakeHead.x = snakeHead.x + 1
+    if(direction == "right") snakeHead.y = snakeHead.y + 1;
+ 
+    snake.unshift(snakeHead);
+    let popped = snake.pop();
+    let cordinates = `${popped.x}, ${popped.y}`;
+    gameBoxCordiantesArray[cordinates].classList.remove("snakeClass");
+
+    snake.forEach(block => {
+        if(block !== snake[0] && block.x == snakeHead.x && block.y == snakeHead.y){
+            gameOver();
+        }
+        let cordinates = `${block.x}, ${block.y}`
+        if(cordinates) gameBoxCordiantesArray[cordinates].classList.add("snakeClass");
+    });
+};
+
+const snakeInterval = setInterval(() => {
+    if(snake.length > 0){
+        spawnSnake();
+    }
+}, 100);
+
+window.addEventListener("keydown", (e) => {
+    if(e.key == "ArrowUp") {
+        previousDirection = direction;
+        if(previousDirection !== "down") direction = "up";
+    }
+    if(e.key == "ArrowDown") {
+        previousDirection = direction;
+        if(previousDirection !== "up") direction = "down";
+    }
+    if(e.key == "ArrowLeft") {
+        previousDirection = direction;
+        if(previousDirection !== "right") direction = "left";
+    }
+    if(e.key == "ArrowRight") {
+        previousDirection = direction;
+        if(previousDirection !== "left") direction = "right";
+    }
+})
