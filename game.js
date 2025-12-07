@@ -14,14 +14,14 @@ let highScore = JSON.parse(localStorage.getItem("highestScore")) || 0;
 DOM.highScoreBox.textContent = highScore;
 
 let snake = [{
-        x: rows/2, 
-        y: cols/2
+        x: 14, 
+        y: 10
     }, {
-        x: 4, 
-        y: 7
+        x: 14, 
+        y: 11
     }, {
-        x: 4, 
-        y: 8
+        x: 14, 
+        y: 12
     }
 ];
 
