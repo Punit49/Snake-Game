@@ -1,7 +1,7 @@
 const DOM = {
     main: document.querySelector("main"),
     gameBoard: document.querySelector(".gameBoard"),
-    boxSize: 40,
+    boxSize: 20,
     scoreBox: document.querySelector("#scoreDiv"),
     highScoreBox: document.querySelector("#highScore"),
 }
@@ -74,7 +74,6 @@ function gameOver(){
         localStorage.setItem("highestScore", JSON.stringify(score));
     }
 }
-// localStorage.clear();
 
 function spawnSnake(){
     let snakeHead = {...snake[0]};

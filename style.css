@@ -46,8 +46,8 @@ html, body{
     --space-3xl: 48px;
 
     /* Game Box */
-    --game-box-height: 40px;
-    --game-box-width: 40px;
+    --game-box-height: 20px;
+    --game-box-width: 20px;
 }
 
 html{
