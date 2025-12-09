@@ -105,6 +105,7 @@ main{
 }
 
 .modal{
+    text-align: center;
     position: fixed;
     top: 0;
     height: 100vh;
@@ -145,4 +146,10 @@ main{
 .disable{
     pointer-events: none;
     overflow: hidden;
+}
+
+@media (max-width: 800px) {
+    main{
+        width: 100%;
+    }
 }
