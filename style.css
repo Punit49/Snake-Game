@@ -104,6 +104,34 @@ main{
     grid-template-rows: repeat(auto-fill, minmax(var(--game-box-width), 1fr));
 }
 
+.modal{
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: var(--space-lg);
+    transition: opacity .3s ease-in-out;
+    opacity: 0;
+    z-index: -1;
+}
+
+.btn{
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--fs-lg);
+    border-radius: var(--border-radius-sm);
+    border: none;
+}
+
+.visible{
+    opacity: 1;
+    z-index: 1;
+}
+
 /* Js Clases */
 .foodBox{
     background-color: lightpink;
@@ -114,31 +142,7 @@ main{
     background-color: var(--bg-snake);
 }
 
-.snake-head {
-    width: 30px;
-    height: 30px;
-    background: #4caf50;
-    position: relative;
-    border-radius: 8px;
-}
-
-.snake-head::before,
-.snake-head::after {
-    content: "";
-    position: absolute;
-    background: black;
-    width: 6px;
-    height: 6px;
-    border-radius: 55%;
-    border: 1px solid white;
-}
-
-.snake-head::before {
-    left: 5px;
-    top: 4px;
-}
-
-.snake-head::after {
-    right: 5px;
-    top: 4px;
+.disable{
+    pointer-events: none;
+    overflow: hidden;
 }

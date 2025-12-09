@@ -4,31 +4,74 @@ const DOM = {
     boxSize: 20,
     scoreBox: document.querySelector("#scoreDiv"),
     highScoreBox: document.querySelector("#highScore"),
+    gameOverModal: document.querySelector(".restartModal"),
+    startModal: document.querySelector(".startModal"),
+    restartBtn: document.querySelector(".restartBtn"),
+    startBtn: document.querySelector(".startBtn"),
+    time: document.querySelector("#time"),
+    desktopModal: document.querySelector(".desktopOnlyModal"),
 }
 
 let boxes;
+let gameOverFlag = false;
 let gameBoxCordiantesArray = [];
+
 let rows = Math.floor((DOM.gameBoard.getBoundingClientRect().height) / DOM.boxSize);
 let cols = Math.floor((DOM.gameBoard.getBoundingClientRect().width) / DOM.boxSize);
+
 let highScore = JSON.parse(localStorage.getItem("highestScore")) || 0;
 DOM.highScoreBox.textContent = highScore;
 
-let snake = [{
-        x: 14, 
-        y: 10
-    }, {
-        x: 14, 
-        y: 11
-    }, {
-        x: 14, 
-        y: 12
+let snake = [];
+let snakeHeadRow = Math.floor(rows / 2);
+let snakeHeadCol = Math.floor(cols / 2);
+
+function checkUserDevice(){
+    if(window.innerWidth <= 1024){
+        DOM.desktopModal.classList.add("visible");
+        DOM.startModal.classList.remove("visible");
+        document.body.classList.add("disable");
     }
-];
+}
+
+checkUserDevice();
+
+function calculateSnakeHead(){
+    snake = [{
+            x: snakeHeadRow, 
+            y: snakeHeadCol
+        }, {
+            x: snakeHeadRow, 
+            y: snakeHeadCol + 1
+        }, {
+            x: snakeHeadRow, 
+            y: snakeHeadCol + 1
+        }
+    ];
+}
 
 let direction = "left";
 let previousDirection = "left";
 let food;
 let score = 0;
+let snakeInterval;
+let timeIntervalId;
+
+DOM.startBtn.addEventListener("click", () => {
+    DOM.startModal.classList.remove("visible");
+    calculateSnakeHead();
+    snakeInterval = setInterval(snakeIntervalFunction, 100);
+    timeIntervalId = setInterval(() => {
+        let [min, sec] = DOM.time.textContent.split(":").map(Number);
+        if(sec >= 59){
+            min += 1;
+            sec = 0
+        }
+        sec += 1;
+        DOM.time.textContent = `${String(min).padStart(2, 0)}:${String(sec).padStart(2, 0)}`;
+    }, 1000);
+})
+
 
 const generateRandomBox = () => { 
     return {x: Math.floor(Math.random() * rows), y: Math.floor(Math.random() * cols) };
@@ -37,9 +80,16 @@ const generateRandomBox = () => {
 const spawnFood = () => {
     let previousFood = DOM.gameBoard.querySelector(".foodBox");
     if(previousFood) DOM.gameBoard.querySelector(".foodBox").classList.remove("foodBox");
+
     food = generateRandomBox();
+    let isInSnake = snake.filter((box) => box.x === food.x && box.y === food.y);
+    if(isInSnake) food = generateRandomBox(); // while loop
     let foodBox = gameBoxCordiantesArray[`${food.x}, ${food.y}`]
     foodBox.classList.add("foodBox");
+}
+
+function snakeIntervalFunction(){
+    if(!gameOverFlag) spawnSnake();
 }
 
 const makeBox = () => {
@@ -51,17 +101,12 @@ const makeBox = () => {
             box.classList.add("boxes");
             DOM.gameBoard.appendChild(box);
             gameBoxCordiantesArray[`${i}, ${j}`] = box;
-            // box.textContent = `${i}, ${j}`;
         }
     }
 
     boxes = document.querySelectorAll('.boxes');
     spawnFood();
 }
-
-window.addEventListener('resize', () => {
-    makeBox();
-})
 
 makeBox();
 
@@ -71,21 +116,36 @@ function increaseScore(){
 }
 
 function gameOver(){
+    gameOverFlag = true;
     clearInterval(snakeInterval);
-    console.log("Game Over");
     if(score > highScore) {
         DOM.highScoreBox.textContent = score;
         localStorage.setItem("highestScore", JSON.stringify(score));
     }
+    DOM.gameOverModal.classList.add("visible");
+}
+
+DOM.restartBtn.addEventListener("click", restartGame);
+
+function restartGame(){
+    DOM.gameOverModal.classList.remove("visible");
+    gameOverFlag = false;
+    direction = "left";
+    previousDirection = "left";
+    score = 0;
+    time.textContent = "00:00";
+    calculateSnakeHead();
+
+    let previousSnakeBox = document.querySelectorAll(".snakeClass");
+    previousSnakeBox.forEach(box => {
+        box.classList.remove("snakeClass");
+    });
+
+    snakeInterval = setInterval(snakeIntervalFunction, 100)
 }
 
 function spawnSnake(){
     let snakeHead = {...snake[0]};
-
-    // Game Over 
-    if(snakeHead.x >= rows || snakeHead.y < 0 || snakeHead.y >= cols || snakeHead.x < 0){
-        gameOver();
-    } 
 
     // Eat Food
     if(snakeHead.x == food.x && snakeHead.y == food.y){
@@ -98,28 +158,29 @@ function spawnSnake(){
     if(direction == "up") snakeHead.x = snakeHead.x - 1;
     if(direction == "down") snakeHead.x = snakeHead.x + 1
     if(direction == "right") snakeHead.y = snakeHead.y + 1;
- 
-    snake.unshift(snakeHead);
-    let popped = snake.pop();
-    let cordinates = `${popped.x}, ${popped.y}`;
-    gameBoxCordiantesArray[cordinates].classList.remove("snakeClass");
 
-    snake.forEach(block => {
-        if(block !== snake[0] && block.x == snakeHead.x && block.y == snakeHead.y){
-            gameOver();
-        }
-        let cordinates = `${block.x}, ${block.y}`
-        if(cordinates) gameBoxCordiantesArray[cordinates].classList.add("snakeClass");
-    });
+     // Game Over 
+    if(snakeHead.x >= rows || snakeHead.y < 0 || snakeHead.y >= cols || snakeHead.x < 0){
+        gameOver();
+        return;
+    } 
+    
+    if(!gameOverFlag){
+        snake.unshift(snakeHead);
+        let popped = snake.pop();
+        let cordinates = `${popped.x}, ${popped.y}`;
+        gameBoxCordiantesArray[cordinates].classList.remove("snakeClass");
+
+        snake.forEach(block => {
+            if(block !== snake[0] && block.x == snakeHead.x && block.y == snakeHead.y) gameOver();
+            let cordinates = `${block.x}, ${block.y}`
+            if(cordinates) gameBoxCordiantesArray[cordinates].classList.add("snakeClass");
+        });
+    }
 };
 
-const snakeInterval = setInterval(() => {
-    if(snake.length > 0){
-        spawnSnake();
-    }
-}, 100);
-
 window.addEventListener("keydown", (e) => {
+    e.preventDefault();
     if(e.key == "ArrowUp") {
         previousDirection = direction;
         if(previousDirection !== "down") direction = "up";

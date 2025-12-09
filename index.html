@@ -11,23 +11,47 @@
         <div class="container">
             <div class="gameDetails">
                 <div id="highScoreBox">
-                    <h3>High Score: </h3>
+                    <span>High Score: </span>
                     <span id="highScore">0</span>
                 </div>
                 <div id="scoreBox">
-                    <h3>Score: </h3>
+                    <span>Score: </span>
                     <span id="scoreDiv">0</span>
                 </div>
                 <div id="timeBox">
-                    <h3>Time: </h3>
-                    <span id="time">0</span>
+                    <span>Time: </span>
+                    <span id="time">00:00</span>
                 </div>
             </div>
             <div class="gameBoard">
                 
             </div>
+
         </div>
     </main>
+
+    <div class="modal startModal visible"> 
+        <h2 class="modalHead">Welcome to tha snake Game</h2>
+        <button class="btn startBtn">
+            Start Game
+        </button>
+    </div>
+
+    <div class="modal restartModal"> 
+        <h1>Game Over!</h1>
+        <h2 class="restartModalHead">Press on Start Button to Restart Game</h2>
+        <button class="btn restartBtn">
+            Restart Game
+        </button>
+    </div>
+
+    <div class="modal desktopOnlyModal"> 
+        <h2>"Oops! This Snake game works best on a laptop or desktop".</h2>
+        <h2>Please open it on a larger screen for the best experience."</h2>
+        <button class="btn" onclick="window.close()">
+            I Understand!
+        </button>
+    </div>
 
     <script defer src="game.js"></script>
 </body>
