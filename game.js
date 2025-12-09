@@ -9,6 +9,7 @@ const DOM = {
     restartBtn: document.querySelector(".restartBtn"),
     startBtn: document.querySelector(".startBtn"),
     time: document.querySelector("#time"),
+    gameOverScore: document.querySelector("#gameOverScore"),
     desktopModal: document.querySelector(".desktopOnlyModal"),
 }
 
@@ -57,21 +58,24 @@ let score = 0;
 let snakeInterval;
 let timeIntervalId;
 
+function timeIntervalFunction(){
+    let [min, sec] = DOM.time.textContent.split(":").map(Number);
+        if(sec >= 59){
+            min += 1;
+            sec = 0
+        }
+    sec += 1;
+    DOM.time.textContent = `${String(min).padStart(2, 0)}:${String(sec).padStart(2, 0)}`;
+}
+
 DOM.startBtn.addEventListener("click", () => {
     DOM.startModal.classList.remove("visible");
     calculateSnakeHead();
     snakeInterval = setInterval(snakeIntervalFunction, 100);
     timeIntervalId = setInterval(() => {
-        let [min, sec] = DOM.time.textContent.split(":").map(Number);
-        if(sec >= 59){
-            min += 1;
-            sec = 0
-        }
-        sec += 1;
-        DOM.time.textContent = `${String(min).padStart(2, 0)}:${String(sec).padStart(2, 0)}`;
+        timeIntervalFunction();
     }, 1000);
 })
-
 
 const generateRandomBox = () => { 
     return {x: Math.floor(Math.random() * rows), y: Math.floor(Math.random() * cols) };
@@ -118,11 +122,15 @@ function increaseScore(){
 function gameOver(){
     gameOverFlag = true;
     clearInterval(snakeInterval);
+    clearInterval(timeIntervalId);
     if(score > highScore) {
         DOM.highScoreBox.textContent = score;
         localStorage.setItem("highestScore", JSON.stringify(score));
     }
     DOM.gameOverModal.classList.add("visible");
+    DOM.gameOverScore.textContent = `Your Score Was - ${score}`
+    score = 0;
+    DOM.scoreBox.textContent = 0;
 }
 
 DOM.restartBtn.addEventListener("click", restartGame);
@@ -141,7 +149,8 @@ function restartGame(){
         box.classList.remove("snakeClass");
     });
 
-    snakeInterval = setInterval(snakeIntervalFunction, 100)
+    snakeInterval = setInterval(snakeIntervalFunction, 100);
+    timeIntervalId = setInterval(timeIntervalFunction, 1000);
 }
 
 function spawnSnake(){

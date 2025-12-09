@@ -94,6 +94,7 @@ main{
     height: var(--game-box-height);
     border: 1px solid var(--border-secondary-color);
     font-size: .8rem;
+    border-radius: 50%;
 }
 
 .gameBoard{
