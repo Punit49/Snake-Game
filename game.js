@@ -180,7 +180,9 @@ function spawnSnake(){
 };
 
 window.addEventListener("keydown", (e) => {
-    e.preventDefault();
+    if(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)){
+        e.preventDefault();
+    }
     if(e.key == "ArrowUp") {
         previousDirection = direction;
         if(previousDirection !== "down") direction = "up";
