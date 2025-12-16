@@ -134,6 +134,12 @@ main{
     z-index: 1;
 }
 
+.levelSelector{
+    width: 10rem;
+    padding: var(--space-xs) var(--space-sm);
+    outline: none;
+}
+
 /* Js Clases */
 .foodBox{
     background-color: lightpink;

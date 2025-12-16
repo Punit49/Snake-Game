@@ -11,6 +11,7 @@ const DOM = {
     time: document.querySelector("#time"),
     gameOverScore: document.querySelector("#gameOverScore"),
     desktopModal: document.querySelector(".desktopOnlyModal"),
+    levelSelector: document.querySelector(".levelSelector"),
 }
 
 let boxes;
@@ -71,7 +72,7 @@ function timeIntervalFunction(){
 DOM.startBtn.addEventListener("click", () => {
     DOM.startModal.classList.remove("visible");
     calculateSnakeHead();
-    snakeInterval = setInterval(snakeIntervalFunction, 100);
+    snakeInterval = setInterval(snakeIntervalFunction, DOM.levelSelector.value);
     timeIntervalId = setInterval(() => {
         timeIntervalFunction();
     }, 1000);
@@ -87,7 +88,7 @@ const spawnFood = () => {
 
     food = generateRandomBox();
     let isInSnake = snake.filter((box) => box.x === food.x && box.y === food.y);
-    if(isInSnake) food = generateRandomBox(); // while loop
+    if(isInSnake) food = generateRandomBox();
     let foodBox = gameBoxCordiantesArray[`${food.x}, ${food.y}`]
     foodBox.classList.add("foodBox");
 }
@@ -113,6 +114,10 @@ const makeBox = () => {
 }
 
 makeBox();
+
+window.addEventListener("resize", () => {
+    makeBox();
+})
 
 function increaseScore(){
     score += 10;
@@ -149,7 +154,7 @@ function restartGame(){
         box.classList.remove("snakeClass");
     });
 
-    snakeInterval = setInterval(snakeIntervalFunction, 100);
+    snakeInterval = setInterval(snakeIntervalFunction, DOM.levelSelector.value);
     timeIntervalId = setInterval(timeIntervalFunction, 1000);
 }
 
